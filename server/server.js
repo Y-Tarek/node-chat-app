@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const socketIo = require('socket.io');
 const http = require('http');
-const {generateMessage} = require('./utils/message');
+const {generateMessage,generateLocationMessage} = require('./utils/message');
 const app = express();
 
 // configuring middleware
@@ -29,14 +29,12 @@ const app = express();
             socket.on('createMessage',(message,callback) => {
                 console.log('Message: ',message);
                 io.emit('newMessage', generateMessage(message.from, message.text));
-                callback('Server');
+                callback();
             })
            
-            // socket.emit('newMessage',{
-            //     from:'chat app',
-            //     text: 'Hey. whats up!',
-            //     createdAt: '456'
-            // })
+           socket.on('createLocationMessage',(coords)=>{               
+                io.emit('newLocationMessage',generateLocationMessage('Admin',coords.latitude,coords.longitude));
+           })
     });
 
     server.listen(3000,(e) => {
